@@ -99,7 +99,7 @@ Blockly.Tooltip.RADIUS_OK = 10;
 /**
  * Delay before tooltip appears.
  */
-Blockly.Tooltip.HOVER_MS = 1000;
+Blockly.Tooltip.HOVER_MS = 750;
 
 /**
  * Horizontal padding between tooltip and screen edge.
@@ -184,7 +184,7 @@ Blockly.Tooltip.onMouseMove_ = function(e) {
   if (!Blockly.Tooltip.element_ || !Blockly.Tooltip.element_.tooltip) {
     // No tooltip here to show.
     return;
-  } else if (Blockly.dragMode_ != 0) {
+  } else if (Blockly.dragMode_ != Blockly.DRAG_NONE) {
     // Don't display a tooltip during a drag.
     return;
   } else if (Blockly.WidgetDiv.isVisible()) {
@@ -196,8 +196,7 @@ Blockly.Tooltip.onMouseMove_ = function(e) {
     // shown and the current mouse position.  Pythagorean theorem.
     var dx = Blockly.Tooltip.lastX_ - e.pageX;
     var dy = Blockly.Tooltip.lastY_ - e.pageY;
-    var dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-    if (dr > Blockly.Tooltip.RADIUS_OK) {
+    if (Math.sqrt(dx * dx + dy * dy) > Blockly.Tooltip.RADIUS_OK) {
       Blockly.Tooltip.hide();
     }
   } else if (Blockly.Tooltip.poisonedElement_ != Blockly.Tooltip.element_) {
@@ -237,7 +236,7 @@ Blockly.Tooltip.show_ = function() {
   goog.dom.removeChildren(/** @type {!Element} */ (Blockly.Tooltip.DIV));
   // Get the new text.
   var tip = Blockly.Tooltip.element_.tooltip;
-  if (goog.isFunction(tip)) {
+  while (goog.isFunction(tip)) {
     tip = tip();
   }
   tip = Blockly.Tooltip.wrap_(tip, Blockly.Tooltip.LIMIT);
